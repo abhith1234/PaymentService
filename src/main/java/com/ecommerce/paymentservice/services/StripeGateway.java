@@ -6,11 +6,13 @@ import com.stripe.model.PaymentLink;
 import com.stripe.model.Price;
 import com.stripe.param.PaymentLinkCreateParams;
 import com.stripe.param.PriceCreateParams;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 @Service
 public class StripeGateway implements PaymentGateway{
+    @Value("${stripe.apiKey}")
     private String apiKey ="REDACTED";
     @Override
     public String generatePaymentLink()
