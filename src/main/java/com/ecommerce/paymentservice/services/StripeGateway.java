@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class StripeGateway implements PaymentGateway{
     @Value("${stripe.apiKey}")
-    private String apiKey ="REDACTED";
+    private String apiKey;
     @Override
     public String generatePaymentLink()
     {
