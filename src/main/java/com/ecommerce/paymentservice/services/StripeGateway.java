@@ -15,12 +15,12 @@ public class StripeGateway implements PaymentGateway{
     @Value("${stripe.apiKey}")
     private String apiKey;
     @Override
-    public String generatePaymentLink()
+    public String generatePaymentLink(long amount, String callbackUrl, long orderId)
     {
         try {
             Stripe.apiKey = this.apiKey;
 
-            Price price = getPrice();
+            Price price = getPrice(amount);
 
             PaymentLinkCreateParams params =
                     PaymentLinkCreateParams.builder()
@@ -32,8 +32,9 @@ public class StripeGateway implements PaymentGateway{
                             ).setAfterCompletion(PaymentLinkCreateParams.AfterCompletion.builder()
                                     .setType(PaymentLinkCreateParams.AfterCompletion.Type.REDIRECT)
                                     .setRedirect(PaymentLinkCreateParams.AfterCompletion.Redirect.builder()
-                                            .setUrl("https://google.com/?trx_id=" + "abcd1234").build()).build())
-                            .build();
+                                            .setUrl(callbackUrl).build()).build())
+                            .putMetadata("orderId", String.valueOf(orderId))
+                    .build();
             PaymentLink paymentLink = PaymentLink.create(params);
             return paymentLink.getUrl();
         }catch (StripeException exception) {
@@ -41,17 +42,17 @@ public class StripeGateway implements PaymentGateway{
         }
     }
 
-    private Price getPrice() {
+    private Price getPrice(long amount) {
         try {
             PriceCreateParams params =
                     PriceCreateParams.builder()
                             .setCurrency("inr")
-                            .setUnitAmount(200000L)
+                            .setUnitAmount(amount)
                             .setProductData(
                                     PriceCreateParams
                                             .ProductData
                                             .builder()
-                                            .setName("iPhone")
+                                            .setName("Mystore")
                                             .build()
                             )
                             .build();
