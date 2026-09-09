@@ -1,5 +1,6 @@
 package com.ecommerce.paymentservice.configs;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,12 @@ import org.springframework.security.web.authentication.logout.HttpStatusReturnin
 
 @Configuration
 class SecurityConfiguration {
+    @Value("${mystore.admin.frontend.url}")
+    String ADMIN_FRONTEND_URL;
+
+    @Value("${mystore.user.frontend.url}")
+    String USER_FRONTEND_URL;
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {
         // @formatter:off
@@ -17,7 +24,7 @@ class SecurityConfiguration {
                 .cors(
                         cors -> cors.configurationSource(request -> {
                             var corsConfig = new org.springframework.web.cors.CorsConfiguration();
-                            corsConfig.setAllowedOrigins(java.util.List.of("http://localhost:4101", "http://localhost:4200"));
+                            corsConfig.setAllowedOrigins(java.util.List.of(ADMIN_FRONTEND_URL, USER_FRONTEND_URL));
                             corsConfig.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                             corsConfig.setAllowedHeaders(java.util.List.of("Authorization", "Content-Type"));
                             return corsConfig;

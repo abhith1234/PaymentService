@@ -2,6 +2,7 @@ package com.ecommerce.paymentservice.services;
 
 import com.ecommerce.paymentservice.dtos.PaymentVarificationResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,9 @@ import java.util.Map;
 
 @Service
 public class PaymentServiceImpl implements PaymentService{
+    @Value("${mystore.product.service.url}")
+    String PRODUCT_SERVICE_URL;
+
     @Autowired
     private PaymentGatewaySelector paymentGatewaySelector;
     @Autowired
@@ -18,7 +22,7 @@ public class PaymentServiceImpl implements PaymentService{
 
     @Override
     public String initiatePayment(long orderId, String callbackUrl) {
-        Map<String, Object> response = restTemplate.getForObject("http://localhost:8080/orders/"+orderId, Map.class);
+        Map<String, Object> response = restTemplate.getForObject(PRODUCT_SERVICE_URL+orderId, Map.class);
         long amount = 0;
         if (response != null) {
             amount = (long) ((Double)response.get("totalAmount")).doubleValue() * 100;
@@ -44,7 +48,7 @@ PaymentVarificationResponseDto paymentVarificationResponseDto = new PaymentVarif
 
                 // 3. You now have both IDs to update your database cleanly!
                 System.out.println("Updating Order: " + orderId + " with Transaction: " + transactionId);
-                Map<String, Object> response = restTemplate.getForObject("http://localhost:8080/orders/" + orderId + "/confirm-payment?transaction_id=" + transactionId, Map.class);
+                Map<String, Object> response = restTemplate.getForObject(PRODUCT_SERVICE_URL + orderId + "/confirm-payment?transaction_id=" + transactionId, Map.class);
 
                 // orderRepository.markAsPaid(orderId, transactionId);
                 paymentVarificationResponseDto.setSuccess(true);
